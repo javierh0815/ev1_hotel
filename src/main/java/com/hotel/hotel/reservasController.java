@@ -55,6 +55,11 @@ public class reservasController {
     public ResponseEntity<?> cancelarReservas(@PathVariable int id){
         for (reservas can : listaHabitaciones) {
             if (can.getId() == id) {
+                if (can.isDisponible()){
+                    errorDatos errorDisp = new errorDatos((id), "No hay reservas asociadas a la habitación ingresada. No se puede cancelar");
+                    return new ResponseEntity<>(errorDisp, HttpStatus.BAD_REQUEST);
+                }
+
                 can.setDisponible(true);
                 return ResponseEntity.ok(can);
             }
