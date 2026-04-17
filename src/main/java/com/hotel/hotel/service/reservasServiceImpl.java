@@ -31,6 +31,7 @@ public class reservasServiceImpl implements reservasService {
     @Override
     public reservas updateReserva(Long id, reservas reserva) {
         return reservaRepository.findById(id).map(existingReserva -> {
+            existingReserva.setNombre(reserva.getNombre());
             existingReserva.setTipo(reserva.getTipo());
             existingReserva.setPrecio(reserva.getPrecio());
             existingReserva.setDisponible(reserva.isDisponible());
