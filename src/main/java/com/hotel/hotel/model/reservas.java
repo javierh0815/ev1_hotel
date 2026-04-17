@@ -1,0 +1,78 @@
+package com.hotel.hotel.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.*;
+
+@Entity
+@Table(name = "reservas")
+public class reservas {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Error de formato: Caracteres inválidos detectados")
+    @Size(min = 2, max = 50, message = "Error de formato: Nombre del tipo de habitación debe tener entre 2 y 50 caracteres")
+    @NotBlank(message = "Error de formato: debe ingresar un nombre de tipo de habitación")
+    @Column(name = "tipo")
+    private String tipo;
+
+
+    @Min(value = 1, message = "Error de formato: El precio debe ser mayor a 0")
+    @Column(name = "precio")
+    private int precio;
+
+
+    @NotNull(message = "Error de formato: Debe especificar si la habitación está disponible o no")
+    @Column(name = "disponible")
+    private boolean disponible;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public int getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(int precio) {
+        this.precio = precio;
+    }
+
+    public boolean isDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    public reservas() {
+    }
+
+    public reservas(Long id, String tipo, int precio, boolean disponible) {
+        this.id = id;
+        this.tipo = tipo;
+        this.precio = precio;
+        this.disponible = disponible;
+    }
+    
+}
