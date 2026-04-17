@@ -3,7 +3,6 @@ package com.hotel.hotel.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import com.hotel.hotel.model.reservas;
 import com.hotel.hotel.repository.reservaRepository;
 
@@ -19,24 +18,33 @@ public class reservasServiceImpl implements reservasService {
     }
 
     @Override
-    public Optional<reservas> getReservaById(Long id) {
-        return reservaRepository.findById(id);
+    public reservas getReservaById(Long id) {
+        return reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
     }
 
     @Override
     public reservas createReserva(reservas reserva) {
-        return reservaRepository.save(reserva);
+        if (reservaRepository.existsByNombre(reserva.getNombre())) {
+            throw new RuntimeException("Ya existe una habitación con el nombre: " + reserva.getNombre());
+        }
+            return reservaRepository.save(reserva);
     }
 
     @Override
-    public reservas updateReserva(Long id, reservas reserva) {
-        return reservaRepository.findById(id).map(existingReserva -> {
-            existingReserva.setNombre(reserva.getNombre());
-            existingReserva.setTipo(reserva.getTipo());
-            existingReserva.setPrecio(reserva.getPrecio());
-            existingReserva.setDisponible(reserva.isDisponible());
-            return reservaRepository.save(existingReserva);
-        }).orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
+        public reservas updateReserva(Long id, reservas reserva) {
+            return reservaRepository.findById(id).map(existingReserva -> {
+                if (!existingReserva.getNombre().equals(reserva.getNombre()) && 
+                    reservaRepository.existsByNombre(reserva.getNombre())) {
+                    throw new RuntimeException("El nombre '" + reserva.getNombre() + "' ya está ocupado por otra habitación.");
+                }
+                
+                existingReserva.setNombre(reserva.getNombre());
+                existingReserva.setTipo(reserva.getTipo());
+                existingReserva.setPrecio(reserva.getPrecio());
+                existingReserva.setDisponible(reserva.isDisponible());
+                return reservaRepository.save(existingReserva);
+            }).orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
     }
 
     @Override

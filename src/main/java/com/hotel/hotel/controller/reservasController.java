@@ -23,9 +23,7 @@ public class reservasController {
 
     @GetMapping("/{id}")
     public ResponseEntity<reservas> getReservaById(@PathVariable Long id) {
-        return reservasService.getReservaById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(reservasService.getReservaById(id));
     }
 
     @PostMapping
@@ -44,4 +42,3 @@ public class reservasController {
         return ResponseEntity.noContent().build();
     }
 }
-

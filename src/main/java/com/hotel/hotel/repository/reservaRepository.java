@@ -5,6 +5,6 @@ import com.hotel.hotel.model.reservas;
 
 
 public interface reservaRepository extends JpaRepository<reservas, Long> {
-
+    boolean existsByNombre(String nombre);
     
 }
