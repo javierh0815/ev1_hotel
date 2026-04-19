@@ -18,21 +18,22 @@ public class reservas {
 
     @NotBlank(message = "Error de formato: debe ingresar el nombre o número de la habitación")
     @Size(min = 2, max = 50, message = "Error de formato: El nombre debe tener entre 2 y 50 caracteres")
-    @Column(name = "nombre", unique = true)
+    @Column(name = "nombre", unique = true, nullable = false   )
     private String nombre;
 
     @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Error de formato: Caracteres inválidos detectados")
     @Size(min = 2, max = 50, message = "Error de formato: Nombre del tipo de habitación debe tener entre 2 y 50 caracteres")
     @NotBlank(message = "Error de formato: debe ingresar un nombre de tipo de habitación")
-    @Column(name = "tipo")
+    @Column(name = "tipo", nullable = false)
     private String tipo;
 
     @Min(value = 1, message = "Error de formato: El precio debe ser mayor a 0")
-    @Column(name = "precio")
-    private int precio;
+    @NotNull(message = "Error: El precio es obligatorio y no puede estar vacío")
+    @Column(name = "precio", nullable = false)
+    private Integer precio;
 
     @NotNull(message = "Error de formato: Debe especificar si la habitación está disponible o no")
-    @Column(name = "disponible")
+    @Column(name = "disponible", nullable = false)
     private boolean disponible;
 
     public Long getId() {
@@ -59,11 +60,11 @@ public class reservas {
         this.tipo = tipo;
     }
 
-    public int getPrecio() {
+    public Integer getPrecio() {
         return precio;
     }
 
-    public void setPrecio(int precio) {
+    public void setPrecio(Integer precio) {
         this.precio = precio;
     }
 
@@ -78,7 +79,7 @@ public class reservas {
     public reservas() {
     }
 
-    public reservas(Long id, String nombre, String tipo, int precio, boolean disponible) {
+    public reservas(Long id, String nombre, String tipo, Integer precio, boolean disponible) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
