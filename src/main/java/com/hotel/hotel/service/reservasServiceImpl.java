@@ -49,10 +49,9 @@ public class reservasServiceImpl implements reservasService {
 
     @Override
     public void deleteReserva(Long id) {
-        if (reservaRepository.existsById(id)) {
-            reservaRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("No se puede eliminar: Reserva no encontrada con ID: " + id);
+        if (!reservaRepository.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar: No existe el ID " + id);
         }
+        reservaRepository.deleteById(id);
     }
 }
