@@ -1,5 +1,7 @@
 package com.hotel.hotel.model;
 
+import org.hibernate.annotations.DynamicInsert;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +12,7 @@ import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "reservas")
+@DynamicInsert
 public class reservas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +21,7 @@ public class reservas {
 
     @NotBlank(message = "Error de formato: debe ingresar el nombre o número de la habitación")
     @Size(min = 2, max = 50, message = "Error de formato: El nombre debe tener entre 2 y 50 caracteres")
-    @Column(name = "nombre", unique = true, nullable = false   )
+    @Column(name = "nombre", unique = true, nullable = false)
     private String nombre;
 
     @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "Error de formato: Caracteres inválidos detectados")
@@ -32,9 +35,8 @@ public class reservas {
     @Column(name = "precio", nullable = false)
     private Integer precio;
 
-    @NotNull(message = "Error de formato: Debe especificar si la habitación está disponible o no")
     @Column(name = "disponible", nullable = false)
-    private boolean disponible;
+    private Boolean disponible;
 
     public Long getId() {
         return id;
@@ -68,18 +70,18 @@ public class reservas {
         this.precio = precio;
     }
 
-    public boolean isDisponible() {
+    public Boolean isDisponible() {
         return disponible;
     }
 
-    public void setDisponible(boolean disponible) {
+    public void setDisponible(Boolean disponible) {
         this.disponible = disponible;
     }
 
     public reservas() {
     }
 
-    public reservas(Long id, String nombre, String tipo, Integer precio, boolean disponible) {
+    public reservas(Long id, String nombre, String tipo, Integer precio, Boolean disponible) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
