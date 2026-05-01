@@ -38,7 +38,7 @@ class reservasServiceImplTest {
     @Test
     void testgetReservaById() {
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
-        assertEquals(Optional.of(reserva), reservasService.getReservaById(1L));
+        assertEquals(reserva, reservasService.getReservaById(1L));
     }
 
     @Test
@@ -51,10 +51,15 @@ class reservasServiceImplTest {
     @Test
     void testUpdateReservaExists() {
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        reservas cambios = new reservas();
+        cambios.setNombre("Habitacion 102");
+        cambios.setTipo(reserva.getTipo());
+        cambios.setPrecio(reserva.getPrecio());
+        cambios.setDisponible(reserva.isDisponible());
         when(reservaRepository.existsByNombre("Habitacion 102")).thenReturn(false);
-        reserva.setNombre("Habitacion 102");
-        when(reservaRepository.save(reserva)).thenReturn(reserva);
-        assertEquals(reserva, reservasService.updateReserva(1L, reserva));
+        when(reservaRepository.save(org.mockito.ArgumentMatchers.any(reservas.class))).thenReturn(cambios);
+        reservas resultado = reservasService.updateReserva(1L, cambios);
+        assertEquals("Habitacion 102", resultado.getNombre());
     }
 
     @Test
@@ -69,9 +74,9 @@ class reservasServiceImplTest {
 
     @Test
     void testDeleteReserva() {
-        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(reservaRepository.existsById(1L)).thenReturn(true);
         reservasService.deleteReserva(1L);
-        // Verificar que la reserva fue eliminada
+        org.mockito.Mockito.verify(reservaRepository).deleteById(1L);
     }
 
 }
