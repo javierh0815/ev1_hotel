@@ -8,6 +8,23 @@ class HotelApplicationTests {
 
 	@Test
 	void contextLoads() {
+		HotelApplication.main(new String[] {});
+		
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
