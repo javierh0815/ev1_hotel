@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import com.hotel.hotel.model.reservas;
 import com.hotel.hotel.repository.reservaRepository;
+import com.hotel.hotel.exception.ReservaNotFoundException;
 
 @Service
 public class reservasServiceImpl implements reservasService {
@@ -20,7 +21,7 @@ public class reservasServiceImpl implements reservasService {
     @Override
     public reservas getReservaById(Long id) {
         return reservaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
+                .orElseThrow(() -> new ReservaNotFoundException(id));
     }
 
     @Override
@@ -44,13 +45,13 @@ public class reservasServiceImpl implements reservasService {
                 existingReserva.setPrecio(reserva.getPrecio());
                 existingReserva.setDisponible(reserva.isDisponible());
                 return reservaRepository.save(existingReserva);
-            }).orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
+            }).orElseThrow(() -> new ReservaNotFoundException(id));
     }
 
     @Override
     public void deleteReserva(Long id) {
         if (!reservaRepository.existsById(id)) {
-            throw new RuntimeException("No se puede eliminar: No existe el ID " + id);
+            throw new ReservaNotFoundException(id);
         }
         reservaRepository.deleteById(id);
     }

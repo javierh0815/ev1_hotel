@@ -1,6 +1,7 @@
 package com.hotel.hotel.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -12,8 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.hotel.hotel.exception.ReservaNotFoundException;
 import com.hotel.hotel.model.reservas;
 import com.hotel.hotel.repository.reservaRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 class reservasServiceImplTest {
@@ -65,10 +68,9 @@ class reservasServiceImplTest {
     @Test
     void testUpdateReservaNotExists() {
         when(reservaRepository.findById(1L)).thenReturn(Optional.empty());
-        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
+        assertThrows(ReservaNotFoundException.class, () -> {
             reservasService.updateReserva(1L, reserva);
         });
-        assertEquals("Reserva no encontrada con ID: 1", exception.getMessage());
     }
 
 
@@ -78,5 +80,14 @@ class reservasServiceImplTest {
         reservasService.deleteReserva(1L);
         org.mockito.Mockito.verify(reservaRepository).deleteById(1L);
     }
+
+    @Test
+    void testGetReservaByIdNotFound() {
+        when(reservaRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(ReservaNotFoundException.class, () -> {
+            reservasService.getReservaById(99L);
+        });
+    }
+
 
 }
