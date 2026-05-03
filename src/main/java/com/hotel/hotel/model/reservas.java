@@ -1,6 +1,7 @@
 package com.hotel.hotel.model;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.hateoas.RepresentationModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +14,7 @@ import jakarta.validation.constraints.*;
 @Entity
 @Table(name = "reservas")
 @DynamicInsert
-public class reservas {
+public class reservas extends RepresentationModel<reservas> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

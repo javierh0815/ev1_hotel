@@ -6,8 +6,15 @@ import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid; 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.hotel.hotel.model.reservas;
 import com.hotel.hotel.service.reservasService;
+
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
 
 @RestController
 @RequestMapping("/reservas")
@@ -17,28 +24,50 @@ public class reservasController {
     private reservasService reservasService;
 
     @GetMapping
-    public List<reservas> getAllReservas() {
-        return reservasService.getAllReservas();
+    public CollectionModel<EntityModel<reservas>> getAllReservas() {
+        List<reservas> lista = reservasService.getAllReservas();
+        List<EntityModel<reservas>> reservasModels = lista.stream()
+                .map(reserva -> EntityModel.of(reserva, linkTo(methodOn(reservasController.class).getReservaById(reserva.getId())).withSelfRel()))
+                .collect(Collectors.toList());
+        return CollectionModel.of(reservasModels, linkTo(methodOn(reservasController.class).getAllReservas()).withSelfRel());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<reservas> getReservaById(@PathVariable Long id) {
-        return ResponseEntity.ok(reservasService.getReservaById(id));
+    public ResponseEntity<EntityModel<reservas>> getReservaById(@PathVariable Long id) {
+        reservas reserva = reservasService.getReservaById(id);
+
+        EntityModel<reservas> model = EntityModel.of(reserva,
+            linkTo(methodOn(reservasController.class).getReservaById(id)).withSelfRel(),
+            linkTo(methodOn(reservasController.class).getAllReservas()).withRel("reservas"));
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping
-    public ResponseEntity<reservas> createReserva(@Valid @RequestBody reservas reserva) {
-        return new ResponseEntity<>(reservasService.createReserva(reserva), HttpStatus.CREATED);
+    public ResponseEntity<EntityModel<reservas>> createReserva(@Valid @RequestBody reservas reserva) {
+        reservas nuevaReserva = reservasService.createReserva(reserva);
+
+        EntityModel<reservas> model = EntityModel.of(nuevaReserva,
+                linkTo(methodOn(reservasController.class).getReservaById(nuevaReserva.getId())).withSelfRel(),
+                linkTo(methodOn(reservasController.class).getAllReservas()).withRel("reservas"));
+
+        return new ResponseEntity<>(model, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<reservas> updateReserva(@PathVariable Long id, @Valid @RequestBody reservas reserva) {
-        return ResponseEntity.ok(reservasService.updateReserva(id, reserva));
+    public ResponseEntity<EntityModel<reservas>> updateReserva(@PathVariable Long id, @Valid @RequestBody reservas reserva) {
+        reservas reservaActualizada = reservasService.updateReserva(id, reserva);
+
+        EntityModel<reservas> model = EntityModel.of(reservaActualizada,
+                linkTo(methodOn(reservasController.class).getReservaById(id)).withSelfRel(),
+                linkTo(methodOn(reservasController.class).getAllReservas()).withRel("reservas"));
+
+        return ResponseEntity.ok(model);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteReserva(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReserva(@PathVariable Long id) {
         reservasService.deleteReserva(id);
-        return ResponseEntity.ok("Reserva eliminada con éxito (ID: " + id + ")");
+        return ResponseEntity.noContent().build();
     }
 }

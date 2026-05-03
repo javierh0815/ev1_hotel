@@ -1,8 +1,13 @@
 package com.hotel.hotel.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +53,9 @@ class reservasControllerTest {
                 .andExpect(jsonPath("$.nombre").value("Habitacion 101"))
                 .andExpect(jsonPath("$.tipo").value("Doble"))
                 .andExpect(jsonPath("$.precio").value(10000))
-                .andExpect(jsonPath("$.disponible").value(true));
+                .andExpect(jsonPath("$.disponible").value(true))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.reservas.href").exists());
     }
 
     @Test
@@ -63,20 +70,47 @@ class reservasControllerTest {
                 .andExpect(jsonPath("$.nombre").value("Habitacion 101"))
                 .andExpect(jsonPath("$.tipo").value("Doble"))
                 .andExpect(jsonPath("$.precio").value(10000))
-                .andExpect(jsonPath("$.disponible").value(true));
+                .andExpect(jsonPath("$.disponible").value(true))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.reservas.href").exists());
     }
 
     @Test
     void testDeleteReserva() throws Exception {
         doNothing().when(reservasService).deleteReserva(1L);
         mockMvc.perform(delete("/reservas/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
         verify(reservasService, times(1)).deleteReserva(1L);
     }
 
+    @Test
+    void testUpdateReserva() throws Exception {
+        when(reservasService.updateReserva(eq(1L), any(reservas.class))).thenReturn(reserva);
+        mockMvc.perform(put("/reservas/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(reserva)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.nombre").value("Habitacion 101"))
+                .andExpect(jsonPath("$.tipo").value("Doble"))
+                .andExpect(jsonPath("$.precio").value(10000))
+                .andExpect(jsonPath("$.disponible").value(true))
+                .andExpect(jsonPath("$._links.self.href").exists())
+                .andExpect(jsonPath("$._links.reservas.href").exists());
+        verify(reservasService, times(1)).updateReserva(eq(1L), any(reservas.class));
+    }
 
+    @Test
+    void testGetAllReservas() throws Exception {
+        List<reservas> lista = List.of(reserva);
+        when(reservasService.getAllReservas()).thenReturn(lista);
 
-
+        mockMvc.perform(get("/reservas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.reservasList[0].id").value(1L))
+                .andExpect(jsonPath("$._links.self.href").exists());
+    }
 
 
 
